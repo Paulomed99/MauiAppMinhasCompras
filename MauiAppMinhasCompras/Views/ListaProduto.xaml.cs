@@ -18,9 +18,19 @@ public partial class ListaProduto : ContentPage
 
     protected async override void OnAppearing()
     {
-		List<Produto> tmp = await App.Db.GetAll();
+		try
+		{
+			List<Produto> tmp = await App.Db.GetAll();
 
-		tmp.ForEach(i => lista.Add(i));
+			tmp.ForEach(i => lista.Add(i));
+		}
+		catch (Exception ex) {
+
+			await DisplayAlert("Ops", ex.Message, "OK");
+		
+		}
+
+		
     }
 
     private void ToolbarItem_Clicked(object sender, EventArgs e)
@@ -36,22 +46,44 @@ public partial class ListaProduto : ContentPage
 
     private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
     {
-		string q = e.NewTextValue;
 
-		lista.Clear();
+		try
+		{
+			string q = e.NewTextValue;
 
-        List<Produto> tmp = await App.Db.Search(q);
+			lista.Clear();
 
-        tmp.ForEach(i => lista.Add(i));
+			List<Produto> tmp = await App.Db.Search(q);
+
+			tmp.ForEach(i => lista.Add(i));
+		}
+		catch (Exception ex) {
+
+			await DisplayAlert("Ops", ex.Message, "OK");
+
+		}
+
+		
     }
 
     private void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-		double soma = lista.Sum(i => i.Total);
 
-		string msg = $"O total é {soma:C}";
+		try
+		{
+			double soma = lista.Sum(i => i.Total);
 
-		DisplayAlert("Total dos produtos", msg, "OK");
+			string msg = $"O total é {soma:C}";
+
+			DisplayAlert("Total dos produtos", msg, "OK");
+		}
+		catch (Exception ex) {
+
+			DisplayAlert("Ops", ex.Message, "OK");
+		
+		}
+
+		
     }
 
     private async void MenuItem_Clicked(object sender, EventArgs e)
@@ -77,5 +109,23 @@ public partial class ListaProduto : ContentPage
 		{
 			await DisplayAlert("Ops", ex.Message, "OK");
 		}
+    }
+
+    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+		try
+		{
+
+			Produto p = e.SelectedItem as Produto;
+
+			Navigation.PushAsync(new Views.EditarProduto { BindingContext = p });
+				
+		}
+
+		catch (Exception ex)
+		{
+			DisplayAlert("Ops", ex.Message , "OK");
+		}
+
     }
 }
