@@ -14,7 +14,12 @@ public partial class NovoProduto : ContentPage
     {
 		try 
 		{
-			Produto p = new Produto
+
+            grid_carregamento.IsVisible = true;
+            carregador.IsRunning = true;
+            await Task.Delay(3000);
+
+            Produto p = new Produto
 			{
 				Descricao = txt_descricao.Text,
 				Quantidade = Convert.ToDouble(txt_quantidade.Text),
@@ -22,12 +27,22 @@ public partial class NovoProduto : ContentPage
 			};
 
 			await App.Db.Insert(p);
-			await DisplayAlert("Sucesso!", "Registro inserido", "OK");
+			
+            txt_descricao.Text = string.Empty;
+            txt_quantidade.Text = string.Empty;
+            txt_preco.Text = string.Empty;
 
-		} 
+            await DisplayAlert("Sucesso!", "Registro inserido", "OK");
+
+        } 
 		catch(Exception ex) 
 		{
 			await DisplayAlert("Ops", ex.Message, "OK");
 		}
+        finally
+        {
+            carregador.IsRunning = false;
+            grid_carregamento.IsVisible = false;
+        }
     }
 }
