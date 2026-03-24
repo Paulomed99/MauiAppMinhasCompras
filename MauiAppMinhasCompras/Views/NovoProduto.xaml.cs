@@ -17,6 +17,7 @@ public partial class NovoProduto : ContentPage
 
             grid_carregamento.IsVisible = true;
             carregador.IsRunning = true;
+            btn_salvar.IsEnabled = false;
             await Task.Delay(3000);
 
             Produto p = new Produto
@@ -31,7 +32,7 @@ public partial class NovoProduto : ContentPage
             txt_descricao.Text = string.Empty;
             txt_quantidade.Text = string.Empty;
             txt_preco.Text = string.Empty;
-
+            
             await DisplayAlert("Sucesso!", "Registro inserido", "OK");
 
         } 
@@ -43,6 +44,7 @@ public partial class NovoProduto : ContentPage
         {
             carregador.IsRunning = false;
             grid_carregamento.IsVisible = false;
+            btn_salvar.IsEnabled = true;
         }
     }
 }

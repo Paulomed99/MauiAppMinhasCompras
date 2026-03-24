@@ -5,10 +5,11 @@
              Title="Novo Produto">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Salvar" Clicked="ToolbarItem_Clicked"/>
+        <ToolbarItem x:Name="btn_salvar" Text="Salvar" Clicked="ToolbarItem_Clicked"/>
     </ContentPage.ToolbarItems>
 
     <Grid>
+
     
         <VerticalStackLayout Spacing="10" Padding="10">
         
