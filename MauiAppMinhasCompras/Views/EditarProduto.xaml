@@ -19,5 +19,11 @@
         <Label Text="Preço unitário:"/>
         <Entry x:Name="txt_preco" Keyboard="Numeric" Text="{Binding Preco}"/>
 
+        <Label Text="Categoria"/>
+        <Picker x:Name="pck_categoria" Title="Selecione..." SelectedItem="{Binding Categoria}" />
+
+        <Label Text="Data de compra"/>
+        <DatePicker x:Name="dt_dataCompra" Format="dd/MM/yyyy"  Date="{Binding Data}"/>
+
     </VerticalStackLayout>
 </ContentPage>

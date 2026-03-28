@@ -7,7 +7,10 @@ public partial class EditarProduto : ContentPage
 	public EditarProduto()
 	{
 		InitializeComponent();
-	}
+
+        pck_categoria.ItemsSource = Enum.GetValues(typeof(Produto.CategoriaProduto));
+
+    }
 
     private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {
@@ -15,12 +18,15 @@ public partial class EditarProduto : ContentPage
         {
 
             Produto produto_anexado = BindingContext as Produto;
+
             Produto p = new Produto
             {
                 Id = produto_anexado.Id,
                 Descricao = txt_descricao.Text,
                 Quantidade = Convert.ToDouble(txt_quantidade.Text),
-                Preco = Convert.ToDouble(txt_preco.Text)
+                Preco = Convert.ToDouble(txt_preco.Text),
+                Categoria = (Produto.CategoriaProduto)pck_categoria.SelectedItem,
+                Data = dt_dataCompra.Date
             };
 
             await App.Db.Update(p);

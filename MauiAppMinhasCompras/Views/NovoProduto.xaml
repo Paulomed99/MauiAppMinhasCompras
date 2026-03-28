@@ -13,7 +13,7 @@
     
         <VerticalStackLayout Spacing="10" Padding="10">
         
-            <Label Text="Descrição do Produto:"/>
+            <Label Text="Descrição do produto:"/>
             <Entry x:Name="txt_descricao"/>
         
             <Label Text="Quantidade:"/>
@@ -21,7 +21,13 @@
         
             <Label Text="Preço unitário:"/>
             <Entry x:Name="txt_preco" Keyboard="Numeric"/>
-        
+
+            <Label Text="Selecione a categoria"/>
+            <Picker x:Name="pck_categoria" Title="Selecione..." ItemsSource="{Binding ListaCategorias}" />
+
+            <Label Text="Data de compra"/>
+            <DatePicker x:Name="dt_dataCompra" Format="dd/MM/yyyy"/>
+
         </VerticalStackLayout>
 
         <Grid x:Name="grid_carregamento" BackgroundColor="#80000000" IsVisible="False">

@@ -143,4 +143,22 @@ public partial class ListaProduto : ContentPage
 		}
 
     }
+
+    private void SomarCategorias(object sender, EventArgs e)
+    {
+        try
+        {
+            double soma = lista.Sum(i => i.Total);
+
+            string msg = $"O total é {soma:C}";
+
+            DisplayAlert("Total dos produtos", msg, "OK");
+        }
+        catch (Exception ex)
+        {
+
+            DisplayAlert("Ops", ex.Message, "OK");
+
+        }
+    }
 }

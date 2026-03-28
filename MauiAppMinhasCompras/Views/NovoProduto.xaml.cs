@@ -5,10 +5,15 @@ namespace MauiAppMinhasCompras.Views;
 
 public partial class NovoProduto : ContentPage
 {
-	public NovoProduto()
+    public Array ListaCategorias { get; set; }
+    public NovoProduto()
 	{
 		InitializeComponent();
-	}
+
+        ListaCategorias = Enum.GetValues(typeof(Models.Produto.CategoriaProduto));
+
+        this.BindingContext = this;
+    }
 
     private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {
@@ -24,7 +29,10 @@ public partial class NovoProduto : ContentPage
 			{
 				Descricao = txt_descricao.Text,
 				Quantidade = Convert.ToDouble(txt_quantidade.Text),
-				Preco = Convert.ToDouble(txt_preco.Text)
+				Preco = Convert.ToDouble(txt_preco.Text),
+                Categoria = (Produto.CategoriaProduto)pck_categoria.SelectedItem,
+                Data = dt_dataCompra.Date,
+                
 			};
 
 			await App.Db.Insert(p);
