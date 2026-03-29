@@ -5,44 +5,82 @@
              Title="Minhas Compras">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Somar Categorias" Clicked="SomarCategorias">
+        <ToolbarItem Text="Somar Categorias" Clicked="SomarCategorias"/>
         <ToolbarItem Text="Somar" Clicked="ToolbarItem_Clicked_1"/>
         <ToolbarItem Text="Adicionar" Clicked="ToolbarItem_Clicked"/>
     </ContentPage.ToolbarItems>
-    
-    
-    <VerticalStackLayout>
-        <SearchBar x:Name="txt_search" Placeholder="Busca de produtos" TextChanged="txt_search_TextChanged"/>
-        <ListView x:Name="lst_produtos" ItemSelected="lst_produtos_ItemSelected">
-            <ListView.Header>
-                <Grid ColumnDefinitions="*, *, *, *, *, *, *">
-                    <Label Grid.Column="0" Text="ID"/>
-                    <Label Grid.Column="1" Text="Descrição"/>
-                    <Label Grid.Column="2" Text="Preço"/>
-                    <Label Grid.Column="3" Text="Qnt"/>
-                    <Label Grid.Column="4" Text="Total"/>
-                    <Label Grid.Column="5" Text="Categoria"/>
-                    <Label Grid.Column="6" Text="Data Compra"/>
-                </Grid>
-            </ListView.Header>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <ViewCell.ContextActions>
-                            <MenuItem Text="Remover" Clicked="MenuItem_Clicked"/>
-                        </ViewCell.ContextActions>
-                        <Grid ColumnDefinitions="*, *, *, *, *, *, *">
-                            <Label Grid.Column="0" Text="{Binding Id}"/>
-                            <Label Grid.Column="1" Text="{Binding Descricao}"/>
-                            <Label Grid.Column="2" Text="{Binding Preco}"/>
-                            <Label Grid.Column="3" Text="{Binding Quantidade}"/>
-                            <Label Grid.Column="4" Text="{Binding Total}"/>
-                            <Label Grid.Column="5" Text="{Binding Categoria}"/>
-                            <Label Grid.Column="6" Text="{Binding Data, StringFormat='{0:dd/MM/yyyy}'}"/>
-                        </Grid>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </VerticalStackLayout>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <SearchBar Grid.Row="0" x:Name="txt_search" Placeholder="Busca de produtos" TextChanged="txt_search_TextChanged"/>
+
+        <Frame Grid.Row="1" Padding="10" Margin="10,0,10,10" CornerRadius="8" BackgroundColor="#f8f9fa" HasShadow="False">
+            <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Data Inicial:" FontSize="12" TextColor="Gray"/>
+                    <DatePicker x:Name="dt_inicio" Format="dd/MM/yyyy" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="Data Final:" FontSize="12" TextColor="Gray"/>
+                    <DatePicker x:Name="dt_fim" Format="dd/MM/yyyy" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="2" Text="Filtrar" Clicked="Filtrar_Clicked" VerticalOptions="End" HeightRequest="40" Padding="15,0"/>
+            </Grid>
+        </Frame>
+
+        <RefreshView Grid.Row="2" x:Name="refresh_view" Refreshing="refresh_view_Refreshing">
+
+            <CollectionView x:Name="lst_produtos"
+                            SelectionMode="Single"
+                            SelectionChanged="lst_produtos_SelectionChanged"
+                            Margin="10,0,10,0">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Remover" 
+                                               BackgroundColor="Red" 
+                                               Invoked="SwipeItem_Invoked" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Frame Padding="15" Margin="0,5,0,10" CornerRadius="10" HasShadow="True">
+                                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="5">
+
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Descricao}" FontAttributes="Bold" FontSize="18" />
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Total, StringFormat='{0:c}'}" FontAttributes="Bold" FontSize="18" TextColor="#28a745" />
+
+                                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" TextColor="Gray">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}Unidade: {0:c}  |  Quantidade: {1}">
+                                                <Binding Path="Preco" />
+                                                <Binding Path="Quantidade" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="12" TextColor="DarkGray">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}  •  {1:dd/MM/yyyy}">
+                                                <Binding Path="Categoria" />
+                                                <Binding Path="Data" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                </Grid>
+                            </Frame>
+                        </SwipeView>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>

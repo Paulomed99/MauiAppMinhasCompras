@@ -101,64 +101,133 @@ public partial class ListaProduto : ContentPage
 		
     }
 
-    private async void MenuItem_Clicked(object sender, EventArgs e)
+    private async void SwipeItem_Invoked(object sender, EventArgs e)
     {
-		try
-		{
-			MenuItem menuItem = sender as MenuItem;
+        try
+        {
+            SwipeItem swipeItem = sender as SwipeItem;
+            Produto produtoSelecionado = swipeItem.BindingContext as Produto;
 
-			Produto produtoSelecionado = menuItem.BindingContext as Produto;
+            if (produtoSelecionado != null)
+            {
+                bool confirmacao = await DisplayAlert("Atenção", $"Deseja realmente remover o produto '{produtoSelecionado.Descricao}'?", "Sim", "Não");
 
-			if (produtoSelecionado != null)
-			{
-				bool confirmacao = await DisplayAlert("Atenção", $"Deseja realmente remover o produto '{produtoSelecionado.Descricao}'?", "Sim", "Não");
-				
-				if (confirmacao)
-				{
-					await App.Db.Delete(produtoSelecionado.Id);
+                if (confirmacao)
+                {
+                    await App.Db.Delete(produtoSelecionado.Id);
                     lista.Remove(produtoSelecionado);
                 }
-			}
-		}
-		catch(Exception ex)
-		{
-			await DisplayAlert("Ops", ex.Message, "OK");
-		}
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
     }
 
-    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private async void lst_produtos_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-		try
-		{
+        if (e.CurrentSelection.Count == 0)
+        {
+            return;
+        }
 
-			Produto p = e.SelectedItem as Produto;
+        try
+        {
+            // Pega o item clicado no formato do CollectionView
+            Produto p = e.CurrentSelection.FirstOrDefault() as Produto;
 
-			Navigation.PushAsync(new Views.EditarProduto { BindingContext = p });
-				
-		}
+            // Desmarca o item
+            lst_produtos.SelectedItem = null;
 
-		catch (Exception ex)
-		{
-			DisplayAlert("Ops", ex.Message , "OK");
-		}
-
+            await Navigation.PushAsync(new Views.EditarProduto { BindingContext = p });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
     }
 
     private void SomarCategorias(object sender, EventArgs e)
     {
         try
         {
-            double soma = lista.Sum(i => i.Total);
+            if (lista.Count == 0)
+            {
+                DisplayAlert("Atenção", "Sua lista está vazia.", "OK");
+                return;
+            }
 
-            string msg = $"O total é {soma:C}";
+            // Isso aqui é a mágica do LINQ! Ele agrupa os produtos por Categoria e soma o Total de cada grupo.
+            var categoriasAgrupadas = lista.GroupBy(p => p.Categoria)
+                                           .Select(grupo => new
+                                           {
+                                               NomeCategoria = grupo.Key,
+                                               TotalGasto = grupo.Sum(p => p.Total)
+                                           });
 
-            DisplayAlert("Total dos produtos", msg, "OK");
+            string relatorio = "Resumo de Gastos:\n\n";
+
+            // Monta o texto linha por linha
+            foreach (var item in categoriasAgrupadas)
+            {
+                relatorio += $"{item.NomeCategoria}: {item.TotalGasto:C}\n";
+            }
+
+            // Mostra o resultado final na tela!
+            DisplayAlert("Relatório por Categoria", relatorio, "OK");
         }
         catch (Exception ex)
         {
-
             DisplayAlert("Ops", ex.Message, "OK");
+        }
+    }
 
+    private async void Filtrar_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            DateTime inicio = dt_inicio.Date;
+            DateTime fim = dt_fim.Date;
+
+            if (inicio > fim)
+            {
+                await DisplayAlert("Atenção", "A data inicial não pode ser maior que a data final.", "OK");
+                return;
+            }
+
+            List<Produto> produtosFiltrados = await App.Db.SearchData(inicio, fim);
+
+            // Graças ao CollectionView, este .Clear() não vai mais fechar o seu app!
+            lista.Clear();
+            produtosFiltrados.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
+    }
+
+    private async void refresh_view_Refreshing(object sender, EventArgs e)
+    {
+        try
+        {
+            // 1. Busca os dados fresquinhos no banco de dados
+            List<Produto> tmp = await App.Db.GetAll();
+
+            // 2. Atualiza a sua lista
+            lista.Clear();
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
+        finally
+        {
+            // 3. O PULO DO GATO: Desliga a animação de carregamento (a bolinha girando)
+            // O "finally" garante que a bolinha vai sumir mesmo se der algum erro no try/catch
+            refresh_view.IsRefreshing = false;
         }
     }
 }
