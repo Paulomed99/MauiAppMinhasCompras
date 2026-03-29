@@ -158,7 +158,6 @@ public partial class ListaProduto : ContentPage
                 return;
             }
 
-            // Isso aqui é a mágica do LINQ! Ele agrupa os produtos por Categoria e soma o Total de cada grupo.
             var categoriasAgrupadas = lista.GroupBy(p => p.Categoria)
                                            .Select(grupo => new
                                            {
@@ -168,13 +167,11 @@ public partial class ListaProduto : ContentPage
 
             string relatorio = "Resumo de Gastos:\n\n";
 
-            // Monta o texto linha por linha
             foreach (var item in categoriasAgrupadas)
             {
                 relatorio += $"{item.NomeCategoria}: {item.TotalGasto:C}\n";
             }
 
-            // Mostra o resultado final na tela!
             DisplayAlert("Relatório por Categoria", relatorio, "OK");
         }
         catch (Exception ex)
@@ -198,7 +195,6 @@ public partial class ListaProduto : ContentPage
 
             List<Produto> produtosFiltrados = await App.Db.SearchData(inicio, fim);
 
-            // Graças ao CollectionView, este .Clear() não vai mais fechar o seu app!
             lista.Clear();
             produtosFiltrados.ForEach(i => lista.Add(i));
         }
@@ -212,10 +208,8 @@ public partial class ListaProduto : ContentPage
     {
         try
         {
-            // 1. Busca os dados fresquinhos no banco de dados
             List<Produto> tmp = await App.Db.GetAll();
 
-            // 2. Atualiza a sua lista
             lista.Clear();
             tmp.ForEach(i => lista.Add(i));
         }
@@ -225,8 +219,6 @@ public partial class ListaProduto : ContentPage
         }
         finally
         {
-            // 3. O PULO DO GATO: Desliga a animação de carregamento (a bolinha girando)
-            // O "finally" garante que a bolinha vai sumir mesmo se der algum erro no try/catch
             refresh_view.IsRefreshing = false;
         }
     }
